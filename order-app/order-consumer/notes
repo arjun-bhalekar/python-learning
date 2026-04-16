@@ -1,0 +1,20 @@
+ddl - CREATE TABLE ORDERS (
+    ORDER_ID NUMBER PRIMARY KEY,
+    CUSTOMER_NAME VARCHAR2(100),
+    AMOUNT NUMBER(10,2),
+    ORDER_DATE TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+sample payload - {"order_id":106,"customer_name":"Maria","amount":200}
+
+container run cmd :
+docker run -d --name order-consumer --network hip-net -e KAFKA_BOOTSTRAP_SERVER=kafka-server:9092 -e KAFKA_TOPIC=orders -e DB_USERNAME=martec -e DB_PASSWORD=dev1234 -e DB_DSN=oracle-db:1521/FREEPDB1 order-consumer-app:0.2
+
+Topic exists:
+docker exec -it kafka-server kafka-topics --list --bootstrap-server localhost:29092
+If not, create it:
+docker exec -it kafka-server kafka-topics --create --topic orders --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+
+kafka-producer cmd :
+docker exec -it kafka-server kafka-console-producer --topic orders --bootstrap-server localhost:29092
